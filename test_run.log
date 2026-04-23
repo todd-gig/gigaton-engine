@@ -1,0 +1,201 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3
+rootdir: /sessions/modest-funny-curie/mnt/Desktop/gigaton_engine
+collecting ... collected 67 items
+
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClient::test_apollo_client_creation_mock_mode PASSED [  1%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClient::test_apollo_client_creation_real_mode PASSED [  2%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClient::test_apollo_client_default_mock_mode PASSED [  4%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_returns_list PASSED [  5%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_respects_max_results PASSED [  7%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_has_required_fields PASSED [  8%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_with_title_filter PASSED [ 10%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_with_industry_filter PASSED [ 11%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_with_department_and_seniority PASSED [ 13%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_generates_valid_emails PASSED [ 14%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_generates_unique_ids PASSED [ 16%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_generates_linkedin_urls PASSED [ 17%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_with_no_filters PASSED [ 19%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_generates_phone_numbers PASSED [ 20%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_enrich_person_by_email PASSED [ 22%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_enrich_person_parses_email_for_names PASSED [ 23%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_with_employee_count_range PASSED [ 25%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientMockMode::test_search_people_with_revenue_range PASSED [ 26%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientRealMode::test_real_mode_search_people_not_implemented PASSED [ 28%]
+apollo_enrichment/tests/test_apollo_client.py::TestApolloClientRealMode::test_real_mode_enrich_person_not_implemented PASSED [ 29%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_engine_creation PASSED [ 31%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_engine_with_custom_client PASSED [ 32%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_segment_high_growth PASSED [ 34%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_segment_enterprise PASSED [ 35%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_segment_content_rich PASSED [ 37%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_segment_plg PASSED [ 38%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_segment_brand_narrative PASSED [ 40%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_segment_nonexistent PASSED [ 41%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_all_segments PASSED [ 43%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_all_segments_respects_max_per_segment PASSED [ 44%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enriched_leads_have_segment_context PASSED [ 46%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enriched_leads_have_fit_scores PASSED [ 47%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enriched_leads_have_required_fields PASSED [ 49%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_summary_basic PASSED [ 50%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_summary_multiple_segments PASSED [ 52%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_summary_enrichment_rate PASSED [ 53%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_result_uses_apollo_filters PASSED [ 55%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_segment_respects_max_results PASSED [ 56%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_result_has_timestamps PASSED [ 58%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_engine_infers_seniority_from_title PASSED [ 59%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_from_prospect_with_match FAILED [ 61%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_from_prospect_with_no_match FAILED [ 62%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_summary_empty_before_enrichment PASSED [ 64%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enriched_leads_are_enriched_lead_objects PASSED [ 65%]
+apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrichment_result_has_apollo_filters PASSED [ 67%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentRequest::test_enrichment_request_creation PASSED [ 68%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentRequest::test_enrichment_request_default_status PASSED [ 70%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentRequest::test_enrichment_request_created_at_auto_set PASSED [ 71%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentRequest::test_enrichment_request_status_transitions PASSED [ 73%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_creation PASSED [ 74%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_enrichment_rate_calculation PASSED [ 76%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_enrichment_rate_all_with_email PASSED [ 77%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_enrichment_rate_none_with_email PASSED [ 79%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_enrichment_rate_empty_leads FAILED [ 80%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_completed_at_auto_set FAILED [ 82%]
+apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_with_error FAILED [ 83%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_creation PASSED [ 85%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_has_email PASSED [ 86%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_full_name PASSED [ 88%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_full_name_missing_first PASSED [ 89%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_full_name_missing_last PASSED [ 91%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_full_name_both_missing PASSED [ 92%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_enriched_at_auto_set PASSED [ 94%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_default_fit_score PASSED [ 95%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_default_enrichment_source PASSED [ 97%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_repr PASSED [ 98%]
+apollo_enrichment/tests/test_models.py::TestEnrichedLead::test_enriched_lead_repr_with_missing_email PASSED [100%]
+
+=================================== FAILURES ===================================
+__________ TestEnrichmentEngine.test_enrich_from_prospect_with_match ___________
+
+self = <apollo_enrichment.tests.test_enrichment_engine.TestEnrichmentEngine object at 0xe20467fb7310>
+
+    def test_enrich_from_prospect_with_match(self):
+        """Test enrich_from_prospect when prospect matches a segment."""
+        # This requires creating a ProspectProfile and ProspectValueAssessment
+        # which is integration-level testing
+        from l1_sensing.models.prospect import ProspectProfile, GTMMotion, MaturityLevel, CapabilitySummary
+        from l1_sensing.models.value_assessment import ProspectValueAssessment
+    
+        engine = EnrichmentEngine()
+    
+        # Create a prospect that matches high_growth_low_infrastructure
+        prospect = ProspectProfile(
+            prospect_id="prospect-001",
+            domain="growthco.com",
+            official_name="GrowthCo",
+            gtm_motion=GTMMotion.SALES_LED,
+            capability_summary=CapabilitySummary(
+                marketing_maturity=MaturityLevel.LOW,
+                measurement_maturity=MaturityLevel.LOW,
+            ),
+        )
+    
+        # Create assessment with values that match the segment
+>       assessment = ProspectValueAssessment(
+            prospect_id="prospect-001",
+            economic_scale=75,  # Within (60, 100)
+            total=65,  # fit_score within (50, 100)
+            need=50,
+            service_fit=50,
+            readiness=50,
+            accessibility=50,
+            expected_uplift=50,
+            confidence=50,
+        )
+E       TypeError: ProspectValueAssessment.__init__() got an unexpected keyword argument 'prospect_id'
+
+apollo_enrichment/tests/test_enrichment_engine.py:242: TypeError
+_________ TestEnrichmentEngine.test_enrich_from_prospect_with_no_match _________
+
+self = <apollo_enrichment.tests.test_enrichment_engine.TestEnrichmentEngine object at 0xe20467f5a320>
+
+    def test_enrich_from_prospect_with_no_match(self):
+        """Test enrich_from_prospect when prospect doesn't match any segment."""
+        from l1_sensing.models.prospect import ProspectProfile, GTMMotion
+        from l1_sensing.models.value_assessment import ProspectValueAssessment
+    
+        engine = EnrichmentEngine()
+    
+        # Create a prospect that doesn't match any segment
+        prospect = ProspectProfile(
+            prospect_id="prospect-002",
+            domain="unknown.com",
+            official_name="Unknown",
+            gtm_motion=GTMMotion.UNKNOWN,
+        )
+    
+>       assessment = ProspectValueAssessment(
+            prospect_id="prospect-002",
+            economic_scale=5,  # Below all segment thresholds
+            total=10,
+            need=10,
+            service_fit=10,
+            readiness=10,
+            accessibility=10,
+            expected_uplift=10,
+            confidence=10,
+        )
+E       TypeError: ProspectValueAssessment.__init__() got an unexpected keyword argument 'prospect_id'
+
+apollo_enrichment/tests/test_enrichment_engine.py:274: TypeError
+___ TestEnrichmentResult.test_enrichment_result_enrichment_rate_empty_leads ____
+
+self = <apollo_enrichment.tests.test_models.TestEnrichmentResult object at 0xe20467edde10>
+
+    def test_enrichment_result_enrichment_rate_empty_leads(self):
+        """Test enrichment_rate with no leads."""
+>       result = EnrichmentResult(
+            request_id="req-001",
+            segment_id="SEG_001",
+            leads=[],
+            total_found=0,
+        )
+E       TypeError: EnrichmentResult.__init__() missing 1 required positional argument: 'segment_name'
+
+apollo_enrichment/tests/test_models.py:160: TypeError
+______ TestEnrichmentResult.test_enrichment_result_completed_at_auto_set _______
+
+self = <apollo_enrichment.tests.test_models.TestEnrichmentResult object at 0xe20467eddb40>
+
+    def test_enrichment_result_completed_at_auto_set(self):
+        """Test that completed_at is automatically set."""
+>       result = EnrichmentResult(
+            request_id="req-001",
+            segment_id="SEG_001",
+            leads=[],
+            total_found=0,
+        )
+E       TypeError: EnrichmentResult.__init__() missing 1 required positional argument: 'segment_name'
+
+apollo_enrichment/tests/test_models.py:171: TypeError
+____________ TestEnrichmentResult.test_enrichment_result_with_error ____________
+
+self = <apollo_enrichment.tests.test_models.TestEnrichmentResult object at 0xe20467ede380>
+
+    def test_enrichment_result_with_error(self):
+        """Test EnrichmentResult with error state."""
+>       result = EnrichmentResult(
+            request_id="req-001",
+            segment_id="SEG_001",
+            leads=[],
+            total_found=0,
+            status="failed",
+            error_message="API rate limit exceeded",
+        )
+E       TypeError: EnrichmentResult.__init__() missing 1 required positional argument: 'segment_name'
+
+apollo_enrichment/tests/test_models.py:182: TypeError
+=========================== short test summary info ============================
+FAILED apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_from_prospect_with_match
+FAILED apollo_enrichment/tests/test_enrichment_engine.py::TestEnrichmentEngine::test_enrich_from_prospect_with_no_match
+FAILED apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_enrichment_rate_empty_leads
+FAILED apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_completed_at_auto_set
+FAILED apollo_enrichment/tests/test_models.py::TestEnrichmentResult::test_enrichment_result_with_error
+========================= 5 failed, 62 passed in 0.11s =========================
