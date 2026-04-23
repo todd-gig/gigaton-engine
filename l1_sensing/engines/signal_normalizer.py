@@ -1,6 +1,6 @@
 """SignalNormalizer for ingesting and validating raw signals."""
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from datetime import datetime
 
 from l1_sensing.models.signal import SignalRecord, SignalClass
@@ -47,7 +47,7 @@ class SignalNormalizer:
 
     def _normalize_single_signal(
         self, prospect_id: str, raw_signal: Dict[str, Any]
-    ) -> SignalRecord | None:
+    ) -> Optional[SignalRecord]:
         """Normalize a single raw signal to SignalRecord.
 
         Args:
