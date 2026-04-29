@@ -322,7 +322,7 @@ class TestSegmentationEngine(unittest.TestCase):
         )
         assessment = self._create_assessment(economic_scale=75, fit_score=70)
 
-        # Create brand assessment
+        # Create brand assessment with realistic scores
         brand_assessment = BrandExperienceAssessment(
             brand_id="brand_123",
             coherence=BrandCoherenceScore(
@@ -334,7 +334,15 @@ class TestSegmentationEngine(unittest.TestCase):
                 trust_contribution=70,
                 manipulation_avoidance=70,
                 composite_score=70,
+                coefficient=0.85,
             ),
+            brand_experience_score=72.0,
+            channel_consistency_score=75.0,
+            proof_to_promise_ratio=0.7,
+            trust_layer_quality=65.0,
+            avg_response_performance=0.8,
+            avg_resolution_performance=0.7,
+            conversion_performance=0.6,
         )
 
         # Should still work with brand assessment

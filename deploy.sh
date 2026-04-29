@@ -33,13 +33,13 @@ if [ ! -d .git ]; then
     git remote set-url origin "git@github-todd:${GITHUB_REPO}.git"
 fi
 git add -A
-git commit -m "Gigaton Engine v1.0.0 — unified sovereign intelligence
+git commit -m "Gigaton Engine v1.1.0 — CRM + Apollo real-mode + Gmail execution
 
-50 modules, 758 tests, L1→L4 pipeline + causal mapping + learning loop +
-gap analysis + ROI engine + governance gates + silence recovery + segmentation
-+ Apollo enrichment + NIX engine + 8-panel dashboard + FastAPI service.
+53 modules, 824 tests. Adds: CRM database adapter with pipeline bridge,
+Apollo real-mode activation via APOLLO_API_KEY env var, Gmail execution engine
+with template system + dry-run toggle, CRUD API endpoints for internal FE.
 
-Convergence of Gigaton Engine + Standalone Decision Engine + SIE." || echo "  (no new changes to commit)"
+Full L1→L2→L3→L4 pipeline with brand coherence + interaction performance." || echo "  (no new changes to commit)"
 git branch -M master
 git push -u origin master
 echo "  ✓ Pushed to GitHub"
@@ -81,7 +81,7 @@ gcloud run deploy gigaton-engine \
     --memory 512Mi \
     --min-instances 0 \
     --max-instances 5 \
-    --set-env-vars "ENVIRONMENT=production,APOLLO_MOCK_MODE=true,SIE_SILENCE_RECOVERY_ENABLED=true,SIE_SILENCE_RECOVERY_DRY_RUN=true,SIE_MAX_DAILY_ACTIONS=50" \
+    --set-env-vars "ENVIRONMENT=production,DATABASE_URL=sqlite:///data/gigaton.db,APOLLO_MOCK_MODE=true,SIE_SILENCE_RECOVERY_ENABLED=true,SIE_SILENCE_RECOVERY_DRY_RUN=true,SIE_MAX_DAILY_ACTIONS=50,GMAIL_DRY_RUN=true,EMAIL_DAILY_LIMIT=50,EMAIL_SENDER_NAME=Turtle Island Solutions,EMAIL_SENDER_COMPANY=Turtle Island Solutions" \
     --quiet
 echo "  ✓ Deployed to Cloud Run"
 echo ""

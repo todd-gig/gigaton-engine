@@ -1,8 +1,8 @@
 """
 Dashboard data generator — Runs the pipeline and produces structured dashboard data.
 
-Executes the 3 CLI scenarios through the GigatonEngine pipeline and generates
-synthetic L2 brand data (since L2 is not yet wired into the pipeline).
+Executes the 3 CLI scenarios through the GigatonEngine pipeline with L2 brand
+experience integrated. L2 now runs as part of every pipeline execution.
 
 Produces a dict structure organized by layer with all metrics needed for rendering.
 """
@@ -17,6 +17,7 @@ if _PROJECT_ROOT not in sys.path:
 
 from pipeline.engine import GigatonEngine
 from pipeline.cli import SCENARIOS
+from l2_brand_experience.models.brand_profile import BrandProfile
 from l2_brand_experience.models.brand_coherence import BrandCoherenceScore
 from l2_brand_experience.models.brand_assessment import BrandExperienceAssessment
 from segmentation.segment_library import SEGMENT_LIBRARY
@@ -24,47 +25,67 @@ from l4_execution.models.role_profile import ROLE_PROFILES
 from l4_execution.engines.nix_engine import NIXEngine
 
 
-def _generate_synthetic_l2_data(scenario_name: str) -> BrandExperienceAssessment:
-    """Generate synthetic L2 brand experience data for dashboard demo."""
-    # Create realistic demo values that vary by scenario
-    scenario_adjustments = {
-        1: {"ethos_base": 75, "consistency": 80, "proof_ratio": 0.85, "trust_quality": 78},
-        2: {"ethos_base": 55, "consistency": 60, "proof_ratio": 0.55, "trust_quality": 58},
-        3: {"ethos_base": 35, "consistency": 40, "proof_ratio": 0.35, "trust_quality": 38},
-    }
+# Demo brand profiles that vary by scenario to show brand impact on pipeline
+DEMO_BRAND_PROFILES = {
+    1: BrandProfile(
+        brand_id="brand_strong",
+        brand_name="Strong Brand Corp",
+        tagline="Transforming businesses through data-driven insights",
+        mission="To empower organizations with predictable, profitable growth systems",
+        value_propositions=["Human-centered analytics", "Simplify complexity", "Customer-first design"],
+        differentiators=["First-principles methodology", "Ethical AI integration"],
+        proof_assets=["Fortune 500 case study", "98% retention rate", "4.8 NPS score", "SOC2 certified"],
+        compliance_claims=["SOC2 Type II", "GDPR compliant"],
+        certifications=["ISO 27001", "SOC2"],
+        active_channels=["email", "voice", "web", "linkedin", "video"],
+        target_response_time_seconds=180.0,
+        target_resolution_time_seconds=1800.0,
+        target_conversion_rate=0.20,
+        minimum_ethos_score=60.0,
+    ),
+    2: BrandProfile(
+        brand_id="brand_developing",
+        brand_name="Developing Brand Inc",
+        tagline="Growing with purpose",
+        mission="Helping mid-market companies scale",
+        value_propositions=["Flexible solutions", "Scalable infrastructure"],
+        differentiators=["Industry focus"],
+        proof_assets=["3 case studies"],
+        compliance_claims=[],
+        certifications=[],
+        active_channels=["email", "web", "voice"],
+        target_response_time_seconds=300.0,
+        target_resolution_time_seconds=3600.0,
+        target_conversion_rate=0.12,
+        minimum_ethos_score=50.0,
+    ),
+    3: BrandProfile(
+        brand_id="brand_weak",
+        brand_name="Weak Brand LLC",
+        tagline="",
+        mission="",
+        value_propositions=[],
+        differentiators=[],
+        proof_assets=[],
+        compliance_claims=[],
+        certifications=[],
+        active_channels=["email"],
+        target_response_time_seconds=600.0,
+        target_resolution_time_seconds=7200.0,
+        target_conversion_rate=0.05,
+        minimum_ethos_score=40.0,
+    ),
+}
 
-    # Determine scenario number from name
+
+def _get_brand_profile_for_scenario(scenario_name: str) -> BrandProfile:
+    """Get the demo brand profile for a given scenario."""
     scenario_num = 1
     if "Mid-Tier" in scenario_name:
         scenario_num = 2
     elif "Weak Signal" in scenario_name:
         scenario_num = 3
-
-    adj = scenario_adjustments.get(scenario_num, scenario_adjustments[1])
-
-    coherence = BrandCoherenceScore(
-        truthfulness_explainability=adj["ethos_base"] + 5,
-        human_centered_technology=adj["ethos_base"],
-        long_term_value_creation=adj["ethos_base"] - 3,
-        cost_roi_discipline=adj["ethos_base"] + 2,
-        human_agency_respect=adj["ethos_base"],
-        trust_contribution=adj["ethos_base"] - 5,
-        manipulation_avoidance=adj["ethos_base"] + 1,
-        composite_score=adj["ethos_base"],
-        coefficient=0.5 + (adj["ethos_base"] / 200),  # Scale 0.5-1.25
-    )
-
-    return BrandExperienceAssessment(
-        brand_id=f"BRAND_SCENARIO_{scenario_num}",
-        coherence=coherence,
-        channel_consistency_score=adj["consistency"],
-        proof_to_promise_ratio=adj["proof_ratio"],
-        trust_layer_quality=adj["trust_quality"],
-        avg_response_performance=0.7 + (adj["consistency"] / 500),
-        avg_resolution_performance=0.65 + (adj["consistency"] / 600),
-        conversion_performance=0.5 + (adj["consistency"] / 800),
-        brand_experience_score=adj["consistency"],
-    )
+    return DEMO_BRAND_PROFILES.get(scenario_num, DEMO_BRAND_PROFILES[1])
 
 
 def generate_dashboard_data() -> Dict[str, Any]:
@@ -99,8 +120,14 @@ def generate_dashboard_data() -> Dict[str, Any]:
         interactions = scenario_config["interactions"]
         role_key = scenario_config["role_key"]
 
-        # Run the full pipeline
-        pipeline_result = engine.run(prospect, inferences, interactions, role_key)
+        # Get scenario-appropriate brand profile
+        brand_profile = _get_brand_profile_for_scenario(scenario_config["name"])
+
+        # Run the full L1→L2→L3→L4 pipeline (L2 is now integrated)
+        pipeline_result = engine.run(
+            prospect, inferences, interactions,
+            brand_profile=brand_profile, role_key=role_key,
+        )
 
         # Extract metrics
         fit_score = round(pipeline_result.prospect_assessment.total, 2)
@@ -111,8 +138,8 @@ def generate_dashboard_data() -> Dict[str, Any]:
         verdicts.append(pipeline_result.verdict)
         total_prospects += 1
 
-        # Generate synthetic L2 data
-        l2_assessment = _generate_synthetic_l2_data(scenario_config["name"])
+        # L2 assessment is now REAL — extracted from pipeline result
+        l2_assessment = pipeline_result.brand_assessment
 
         # Generate Next Interaction Experience recommendation
         prior_channels = [i.channel for i in interactions]
@@ -154,7 +181,7 @@ def generate_dashboard_data() -> Dict[str, Any]:
                 "priority_gaps": pipeline_result.prospect_assessment.priority_gaps,
             },
 
-            # L2 data (synthetic)
+            # L2 data (real — from integrated pipeline)
             "l2": {
                 "brand_id": l2_assessment.brand_id,
                 "coherence": {
@@ -224,7 +251,7 @@ def generate_dashboard_data() -> Dict[str, Any]:
         "verdicts_distribution": verdict_dist,
         "layer_statuses": {
             "l1": "healthy",
-            "l2": "ready",
+            "l2": "operational",
             "l3": "operational",
             "l4": "active",
         },

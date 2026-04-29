@@ -12,8 +12,12 @@ COPY . .
 # Ensure project root is importable
 ENV PYTHONPATH=/app
 
+# Create data directory for SQLite persistence
+RUN mkdir -p /data
+
 # Cloud Run sets PORT env var
 ENV PORT=8080
+ENV DATABASE_URL=sqlite:///data/gigaton.db
 
 EXPOSE 8080
 

@@ -203,16 +203,16 @@ class TestApolloClientMockMode:
 class TestApolloClientRealMode:
     """Test Apollo real API mode (structure only)."""
 
-    def test_real_mode_search_people_not_implemented(self):
-        """Test that real mode search_people raises NotImplementedError."""
+    def test_real_mode_search_people_raises_on_connection(self):
+        """Test that real mode search_people raises error without valid endpoint."""
         client = ApolloClient(api_key="test-key", mock_mode=False)
 
-        with pytest.raises(NotImplementedError):
+        with pytest.raises((RuntimeError, ImportError)):
             client.search_people({}, max_results=5)
 
-    def test_real_mode_enrich_person_not_implemented(self):
-        """Test that real mode enrich_person raises NotImplementedError."""
+    def test_real_mode_enrich_person_raises_on_connection(self):
+        """Test that real mode enrich_person raises error without valid endpoint."""
         client = ApolloClient(api_key="test-key", mock_mode=False)
 
-        with pytest.raises(NotImplementedError):
+        with pytest.raises((RuntimeError, ImportError)):
             client.enrich_person("test@example.com")

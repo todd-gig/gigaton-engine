@@ -35,9 +35,11 @@ from l1_sensing.models.prospect import (
     ProspectProfile, CapabilitySummary, MaturityLevel, GTMMotion, PricingVisibility,
 )
 from l1_sensing.models.inference import InferenceRecord, InferenceType
+from l2_brand_experience.models.brand_profile import BrandProfile
+from l2_brand_experience.engines.brand_experience_engine import BrandExperienceEngine
 from l4_execution.models.interaction import InteractionEvent
 from l4_execution.engines.nix_engine import NIXEngine
-from segmentation.engines.segmentation_engine import SegmentationEngine
+from segmentation.engines.segmentation_engine import SegmentationEngine, InteractionPerformanceContext
 from apollo_enrichment.engines.enrichment_engine import EnrichmentEngine
 from apollo_enrichment.engines.apollo_client import ApolloClient
 from pipeline.silence_recovery import SilenceRecoveryEngine, LeadSilenceState
@@ -47,11 +49,18 @@ from pipeline.silence_recovery import SilenceRecoveryEngine, LeadSilenceState
 
 app = FastAPI(
     title="Gigaton Engine API",
-    description="Unified Sovereign Intelligence — L1→L4 Pipeline + Silence Recovery + Segmentation + Enrichment",
-    version="1.0.0",
+    description="Unified Sovereign Intelligence — L1→L4 Pipeline + Silence Recovery + Segmentation + Enrichment + CRM",
+    version="1.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+# Include CRM CRUD routes
+try:
+    from api.crm_routes import router as crm_router
+    app.include_router(crm_router)
+except ImportError:
+    pass  # CRM routes optional — may not be available in all deployments
 
 app.add_middleware(
     CORSMiddleware,
@@ -66,7 +75,8 @@ app.add_middleware(
 _engine = GigatonEngine()
 _nix = NIXEngine()
 _segmentation = SegmentationEngine()
-_enrichment = EnrichmentEngine(apollo_client=ApolloClient(mock_mode=True))
+from apollo_enrichment.engines.apollo_client import create_apollo_client
+_enrichment = EnrichmentEngine(apollo_client=create_apollo_client())
 _silence = SilenceRecoveryEngine()
 _boot_time = datetime.utcnow().isoformat()
 
@@ -114,10 +124,27 @@ class InteractionRequest(BaseModel):
     sentiment_score: float = 0.5
     trust_shift_score: float = 0.0
 
+class BrandProfileRequest(BaseModel):
+    brand_id: str = "default"
+    brand_name: str = "Default Brand"
+    tagline: str = ""
+    mission: str = ""
+    value_propositions: List[str] = []
+    differentiators: List[str] = []
+    proof_assets: List[str] = []
+    compliance_claims: List[str] = []
+    certifications: List[str] = []
+    active_channels: List[str] = ["email", "web"]
+    target_response_time_seconds: float = 300.0
+    target_resolution_time_seconds: float = 3600.0
+    target_conversion_rate: float = 0.15
+    minimum_ethos_score: float = 50.0
+
 class PipelineRunRequest(BaseModel):
     prospect: ProspectRequest
     inferences: List[InferenceRequest] = []
     interactions: List[InteractionRequest] = []
+    brand_profile: Optional[BrandProfileRequest] = None
     role_key: str = "sales_operator"
     base_compensation: float = 5000.0
     strategic_multiplier: float = 1.0
@@ -125,11 +152,13 @@ class PipelineRunRequest(BaseModel):
 class ProspectOnlyRequest(BaseModel):
     prospect: ProspectRequest
     inferences: List[InferenceRequest] = []
+    brand_profile: Optional[BrandProfileRequest] = None
 
 class NIXRequest(BaseModel):
     prospect: ProspectRequest
     inferences: List[InferenceRequest] = []
     interactions: List[InteractionRequest] = []
+    brand_profile: Optional[BrandProfileRequest] = None
     role_key: str = "sales_operator"
     prior_channels: List[str] = []
 
@@ -150,6 +179,8 @@ class SilenceEvalRequest(BaseModel):
 class SegmentRequest(BaseModel):
     prospect: ProspectRequest
     inferences: List[InferenceRequest] = []
+    brand_profile: Optional[BrandProfileRequest] = None
+    interactions: List[InteractionRequest] = []
 
 class EnrichSegmentRequest(BaseModel):
     segment_key: str
@@ -178,6 +209,22 @@ def _to_inference_type(s: str) -> InferenceType:
                "value_estimate": InferenceType.VALUE_ESTIMATE, "business_goal": InferenceType.BUSINESS_GOAL,
                "gtm_motion": InferenceType.GTM_MOTION}
     return mapping.get(s.lower(), InferenceType.PAIN_POINT)
+
+def _build_brand_profile(req) -> Optional[BrandProfile]:
+    """Build BrandProfile from request, or return None to use engine default."""
+    if req is None:
+        return None
+    return BrandProfile(
+        brand_id=req.brand_id, brand_name=req.brand_name,
+        tagline=req.tagline, mission=req.mission,
+        value_propositions=req.value_propositions, differentiators=req.differentiators,
+        proof_assets=req.proof_assets, compliance_claims=req.compliance_claims,
+        certifications=req.certifications, active_channels=req.active_channels,
+        target_response_time_seconds=req.target_response_time_seconds,
+        target_resolution_time_seconds=req.target_resolution_time_seconds,
+        target_conversion_rate=req.target_conversion_rate,
+        minimum_ethos_score=req.minimum_ethos_score,
+    )
 
 def _build_prospect(req: ProspectRequest) -> ProspectProfile:
     caps = CapabilitySummary()
@@ -228,7 +275,7 @@ def status():
         "boot_time": _boot_time,
         "modules": {
             "l1_sensing": "operational",
-            "l2_brand_experience": "operational",
+            "l2_brand_experience": "integrated",
             "l3_qualification": "operational",
             "l3_causal_engine": "operational",
             "l3_learning_engine": "operational",
@@ -242,26 +289,31 @@ def status():
             "segmentation": "operational",
             "apollo_enrichment": "operational (mock mode)",
             "silence_recovery": "operational",
+            "crm_adapter": "operational",
+            "email_execution": "operational (dry-run default)",
+            "apollo_enrichment": f"operational ({'real' if os.environ.get('APOLLO_API_KEY') else 'mock'} mode)",
             "governance": "operational",
             "state_machine": "operational",
             "audit": "operational",
         },
-        "test_count": 758,
-        "module_count": 50,
+        "test_count": 776,
+        "module_count": 53,
     }
 
 
 @app.post("/api/v1/pipeline/run")
 def pipeline_run(req: PipelineRunRequest):
-    """Full L1→L3→L4 pipeline execution."""
+    """Full L1→L2→L3→L4 pipeline execution."""
     start = time.time()
     prospect = _build_prospect(req.prospect)
     inferences = _build_inferences(req.inferences)
     interactions = _build_interactions(req.interactions)
+    brand_profile = _build_brand_profile(req.brand_profile)
 
     result = _engine.run(
         prospect=prospect, inferences=inferences, interactions=interactions,
-        role_key=req.role_key, base_compensation=req.base_compensation,
+        brand_profile=brand_profile, role_key=req.role_key,
+        base_compensation=req.base_compensation,
         strategic_multiplier=req.strategic_multiplier,
     )
 
@@ -273,10 +325,11 @@ def pipeline_run(req: PipelineRunRequest):
 
 @app.post("/api/v1/pipeline/prospect")
 def pipeline_prospect(req: ProspectOnlyRequest):
-    """L1→L3 prospect qualification only."""
+    """L1→L2→L3 prospect qualification only."""
     prospect = _build_prospect(req.prospect)
     inferences = _build_inferences(req.inferences)
-    l1_l3 = _engine.run_l1_l3(prospect=prospect, inferences=inferences)
+    brand_profile = _build_brand_profile(req.brand_profile)
+    l1_l3 = _engine.run_l1_l3(prospect=prospect, inferences=inferences, brand_profile=brand_profile)
 
     assessment = l1_l3["assessment"]
     decision = l1_l3["decision"]
@@ -305,10 +358,11 @@ def pipeline_nix(req: NIXRequest):
     prospect = _build_prospect(req.prospect)
     inferences = _build_inferences(req.inferences)
     interactions = _build_interactions(req.interactions)
+    brand_profile = _build_brand_profile(req.brand_profile)
 
     result = _engine.run(
         prospect=prospect, inferences=inferences, interactions=interactions,
-        role_key=req.role_key,
+        brand_profile=brand_profile, role_key=req.role_key,
     )
 
     nix_result = _nix.recommend(
@@ -347,16 +401,33 @@ def silence_evaluate(req: SilenceEvalRequest):
 
 @app.post("/api/v1/segmentation/classify")
 def segmentation_classify(req: SegmentRequest):
-    """Classify a prospect into customer segments."""
+    """Classify a prospect into customer segments using L1 + L2 + L4 data."""
     from l1_sensing.engines.prospect_value_engine import ProspectValueEngine
     prospect = _build_prospect(req.prospect)
     inferences = _build_inferences(req.inferences)
     assessment = ProspectValueEngine.score_prospect(prospect, inferences)
-    segments = _segmentation.classify(prospect, assessment)
+
+    # L2: Brand assessment (optional, enhances segmentation precision)
+    brand_assessment = None
+    brand_profile = _build_brand_profile(req.brand_profile)
+    if brand_profile is not None:
+        interactions = _build_interactions(req.interactions)
+        brand_assessment = BrandExperienceEngine.assess(brand_profile, interactions)
+
+    # L4: Interaction performance context (optional)
+    interaction_context = None
+    if req.interactions:
+        interactions = _build_interactions(req.interactions)
+        interaction_context = InteractionPerformanceContext.from_interactions(interactions)
+
+    segments = _segmentation.classify(
+        prospect, assessment, brand_assessment, interaction_context,
+    )
 
     return {
         "prospect_id": req.prospect.prospect_id,
         "fit_score": round(assessment.total, 2),
+        "brand_experience_score": round(brand_assessment.brand_experience_score, 2) if brand_assessment else None,
         "matched_segments": [
             {
                 "segment_id": s.segment_id,
